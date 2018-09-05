@@ -33,12 +33,12 @@ const RootQuery = new GraphQLObjectType({
     messages: {
       type: new GraphQLList(MessageType),
       resolve(parents, args) {
-        return _.find(messages, {});
+        return messages;
       }
     }
   }
 });
 
-module.exports = new GraphQLSchema({
+export default new GraphQLSchema({
   query: RootQuery
 });

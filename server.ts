@@ -1,7 +1,7 @@
 import express = require("express");
 import cors = require("cors");
 import graphqlHTTP = require("express-graphql");
-import schema = require("./schema/schema");
+import schema from "./schema/schema";
 
 const server = express();
 server.use(cors());
