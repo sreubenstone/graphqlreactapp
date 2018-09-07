@@ -1,22 +1,22 @@
-console.log("hello, testing your horrific code");
-
 var pg = require("pg");
 require("dotenv").config();
+//or native libpq bindings
+//var pg = require('pg').native
 
-// PostGres connection String defined
-const connectionString = "postgres://localhost:5432/graphqlhack";
-// import _ = require("lodash");
-const pgp = require("pg-promise")();
-const db = {
-  conn: pgp(connectionString)
-};
+var conString =
+  process.env.CONNECTSTRING || "postgres://localhost:5432/graphqlhack";
 
-let query = `SELECT message_body FROM messages`;
+var client = new pg.Client(conString);
+client.connect(function(err) {
+  if (err) {
+    return console.error("could not connect to postgres", err);
+  }
+  client.query("SELECT message_body FROM messages", function(err, result) {
+    if (err) {
+      return console.error("error running query", err);
+    }
+    console.log(result);
 
-async Messages(query){
-    return await db.conn.many(query);
-}
-
-
-    
-
+    client.end();
+  });
+});
