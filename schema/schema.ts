@@ -1,5 +1,14 @@
 import graphql = require("graphql");
-import _ = require("lodash");
+var pg = require("pg");
+require("dotenv").config();
+
+// PostGres connection String defined
+const connectionString = "postgres://localhost:5432/graphqlhack";
+// import _ = require("lodash");
+const pgp = require("pg-promise")();
+const db = {
+  conn: pgp(connectionString)
+};
 
 const {
   GraphQLObjectType,
@@ -13,11 +22,11 @@ const {
 
 //dummy data
 
-let messages = [
-  { message: "holla at ya girl", id: "1" },
-  { message: "is it me or is it hot in here", id: "2" },
-  { message: "i like those red shoes", id: "3" }
-];
+// let messages = [
+//   { message: "holla at ya girl", id: "1" },
+//   { message: "is it me or is it hot in here", id: "2" },
+//   { message: "i like those red shoes", id: "3" }
+// ];
 
 const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -28,17 +37,39 @@ const MessageType = new GraphQLObjectType({
 });
 
 const RootQuery = new GraphQLObjectType({
+  //
   name: "RootQueryType",
   fields: {
     messages: {
       type: new GraphQLList(MessageType),
-      resolve(parents, args) {
-        return messages;
+      async resolve(parents, args) {
+        let query = `SELECT message_body
+        FROM messages`;
+        return await db.conn.many(query);
+        console.log(db.conn.many(query));
+      }
+    }
+  }
+});
+
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addMessage: {
+      type: MessageType,
+      args: {
+        message: { type: GraphQLString }
+      },
+      async resolve(parents, args) {
+        const query = `INSERT INTO messages (message_body)
+        VALUES ('${args.message}');`;
+        return await db.conn.one(query);
       }
     }
   }
 });
 
 export default new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutation
 });
