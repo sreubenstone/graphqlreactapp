@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { Client } = require("pg");
 
-async () => {
+const jbeach = async () => {
   const client = new Client();
   await client.connect();
   const res = await client.query(
@@ -10,3 +10,15 @@ async () => {
   console.log(res);
   await client.end();
 };
+
+jbeach();
+
+const youngdong = async () => {
+  const client = new Client();
+  await client.connect();
+  const res = await client.query("SELECT message_body FROM messages");
+  console.log(res);
+  await client.end();
+};
+
+youngdong();
