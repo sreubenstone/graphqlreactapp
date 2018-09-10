@@ -2,9 +2,9 @@ const models = require("./models/index.js");
 
 // console.log(models.Message);
 
-// models.Message.findAll().then(function(messages) {
-//   console.log(messages);
-// });
+models.Message.findAll().then(function(messages) {
+  console.log(messages);
+});
 
 const message = models.Message.build({
   body: "life savers look good"

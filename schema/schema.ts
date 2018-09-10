@@ -2,7 +2,11 @@ import graphql = require("graphql");
 var pg = require("pg");
 const { Client } = require("pg");
 require("dotenv").config();
-const models = require("./models");
+import models = require(".././models/index.js");
+
+interface Message {
+  type: object;
+}
 
 const {
   GraphQLObjectType,
@@ -26,7 +30,7 @@ const MessageType = new GraphQLObjectType({
   name: "Message",
   fields: () => ({
     id: { type: GraphQLString },
-    message: { type: GraphQLString }
+    message: { type: GraphQLString, resolve: parent => parent.body }
   })
 });
 
@@ -36,7 +40,13 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     messages: {
       type: new GraphQLList(MessageType),
-      async resolve(parents, args) {}
+      async resolve(parents, args) {
+        const dong = await models.Message.findAll();
+        console.log("dong", dong);
+        const nodes = dong.map(node => node.dataValues);
+        console.log("map of dong", nodes);
+        return nodes;
+      }
     }
   }
 });
@@ -49,7 +59,12 @@ const Mutation = new GraphQLObjectType({
       args: {
         message: { type: GraphQLString }
       },
-      async resolve(parents, args) {}
+      async resolve(parents, args) {
+        const fuckenmessage = models.Message.build({
+          body: args.message
+        });
+        return await fuckenmessage.save();
+      }
     }
   }
 });
