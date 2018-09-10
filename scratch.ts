@@ -1,16 +1,16 @@
 const models = require("./models/index.js");
 
-console.log(models.Message);
+// console.log(models.Message);
 
-// const message = models.Message.build({
-// body: "life savers look good"
-// })
+// models.Message.findAll().then(function(messages) {
+//   console.log(messages);
+// });
 
-// message.save();
-
-models.Message.findAll().then(function(messages) {
-  console.log(messages);
+const message = models.Message.build({
+  body: "life savers look good"
 });
+
+message.save();
 
 // const message = models.message.build({
 //   body: "shfgh"
