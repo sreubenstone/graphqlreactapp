@@ -1,23 +1,8 @@
 import graphql = require("graphql");
 var pg = require("pg");
+const { Client } = require("pg");
 require("dotenv").config();
-
-// PostGres connection String defined
-var conString =
-  process.env.CONNECTSTRING || "postgres://localhost:5432/graphqlhack";
-const connectionString = "postgres://localhost:5432/graphqlhack";
-var client = new pg.Client(conString);
-
-var pg = require("pg");
-require("dotenv").config();
-//or native libpq bindings
-//var pg = require('pg').native
-
-// import _ = require("lodash");
-const pgp = require("pg-promise")();
-const db = {
-  conn: pgp(connectionString)
-};
+const models = require("./models");
 
 const {
   GraphQLObjectType,
@@ -51,11 +36,7 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     messages: {
       type: new GraphQLList(MessageType),
-      async resolve(parents, args) {
-        await client.connect();
-        return await client.query("SELECT message_body FROM messages");
-        client.end();
-      }
+      async resolve(parents, args) {}
     }
   }
 });
@@ -68,11 +49,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         message: { type: GraphQLString }
       },
-      async resolve(parents, args) {
-        await client.connect();
-        return await client.query('INSERT INTO messages (message_body) VALUES ('${args.message}');');
-        client.end();
-      }
+      async resolve(parents, args) {}
     }
   }
 });
