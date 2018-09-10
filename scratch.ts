@@ -1,6 +1,14 @@
-const models = require("./models");
+const models = require("./models/index.js");
 
-models.message.findAll().then(function(messages) {
+console.log(models.Message);
+
+// const message = models.Message.build({
+// body: "life savers look good"
+// })
+
+// message.save();
+
+models.Message.findAll().then(function(messages) {
   console.log(messages);
 });
 
@@ -9,7 +17,6 @@ models.message.findAll().then(function(messages) {
 // });
 
 // message.save().then(function(newMessage) {
-//   console.log(newMessage);
 // });
 
 // require("dotenv").config();
