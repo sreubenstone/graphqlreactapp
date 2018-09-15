@@ -6,6 +6,7 @@ import schema from "./schema/schema";
 import passport from "passport";
 import FacebookStrategy from "passport-facebook";
 import { appendFile } from "fs";
+import models = require("./models/index.js");
 
 const server = express();
 server.use(cors());
@@ -15,11 +16,32 @@ passport.use(
     {
       clientID: "450892708651366",
       clientSecret: "43cede2cdbd7438b663ab04d1251ee01",
-      callbackURL: "https://801b974b.ngrok.io/auth/facebook/callback"
+      callbackURL: "https://841aea92.ngrok.io/auth/facebook/callback"
     },
-    (accessToken, refreshToken, profile, cb) => {
+    async (accessToken, refreshToken, profile, cb) => {
+      // 2 cases
+      // #1 first time login
+      // #2 other times
+      const { id, displayName } = profile;
+      // []
+      const fbUsers = await models.FbAuth.findAll({
+        limit: 1,
+        where: { fb_id: id }
+      });
+
+      console.log(fbUsers);
       console.log(profile);
-      cb(null, profile);
+
+      if (!fbUsers.length) {
+        const user = await models.User.create();
+        await models.FbAuth.create({
+          fb_id: id,
+          display_name: displayName,
+          user_id: user.id
+        });
+      }
+
+      cb(null, {});
     }
   )
 );
@@ -30,9 +52,11 @@ server.get("/auth/facebook", passport.authenticate("facebook"));
 
 server.get(
   "/auth/facebook/callback",
-  passport.authenticate("facebook", { session: false }),
-  (req, res) => {
-    res.send("AUTH WAS GOOD");
+  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect("/");
+    res.send("Auth good boy");
   }
 );
 
