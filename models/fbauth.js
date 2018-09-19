@@ -1,11 +1,15 @@
-'use strict';
+"use strict";
 module.exports = (sequelize, DataTypes) => {
-  const fbauth = sequelize.define('fbauth', {
-    fb_id: DataTypes.STRING,
-    displayname: DataTypes.STRING
-  }, {});
-  fbauth.associate = function(models) {
+  const Fbauth = sequelize.define(
+    "fbauths",
+    {
+      fb_id: DataTypes.STRING,
+      displayname: DataTypes.STRING
+    },
+    {}
+  );
+  Fbauth.associate = function(models) {
     // associations can be defined here
   };
-  return fbauth;
+  return Fbauth;
 };

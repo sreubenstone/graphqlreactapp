@@ -7,6 +7,7 @@ import passport from "passport";
 import FacebookStrategy from "passport-facebook";
 import { appendFile } from "fs";
 import models = require("./models/index.js");
+import * as session from "express-session";
 
 const server = express();
 server.use(cors());
@@ -16,14 +17,12 @@ passport.use(
     {
       clientID: "450892708651366",
       clientSecret: "43cede2cdbd7438b663ab04d1251ee01",
-      callbackURL: "https://841aea92.ngrok.io/auth/facebook/callback"
+      callbackURL: "https://4ee85af9.ngrok.io/auth/facebook/callback"
     },
+
     async (accessToken, refreshToken, profile, cb) => {
-      // 2 cases
-      // #1 first time login
-      // #2 other times
       const { id, displayName } = profile;
-      // []
+
       const fbUsers = await models.FbAuth.findAll({
         limit: 1,
         where: { fb_id: id }
@@ -33,7 +32,7 @@ passport.use(
       console.log(profile);
 
       if (!fbUsers.length) {
-        const user = await models.User.create();
+        const user = await models.FbAuth.create();
         await models.FbAuth.create({
           fb_id: id,
           display_name: displayName,

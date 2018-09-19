@@ -26,6 +26,14 @@ const {
 //   { message: "i like those red shoes", id: "3" }
 // ];
 
+const FbuserType = new GraphQLObjectType({
+  name: "Fbuser",
+  fields: () => ({
+    fb_id: { type: GraphQLString },
+    fb_name: { type: GraphQLString }
+  })
+});
+
 const MessageType = new GraphQLObjectType({
   name: "Message",
   fields: () => ({
