@@ -8,56 +8,39 @@ import FacebookStrategy from "passport-facebook";
 import { appendFile } from "fs";
 import models = require("./models/index.js");
 import * as session from "express-session";
+const knexConfig = require("./db/knex");
+const knex = require("knex")(knexConfig);
+const authRoutes = require('./routes/auth-routes');
+const passportSetup = require('./config/passport-setup');
+const cookieSession = require('cookie-session');
+const keys = require('./config/keys');
+
 
 const server = express();
 server.use(cors());
 
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: "450892708651366",
-      clientSecret: "43cede2cdbd7438b663ab04d1251ee01",
-      callbackURL: "https://4ee85af9.ngrok.io/auth/facebook/callback"
-    },
+// set up session cookies
+server.use(cookieSession({
+  maxAge: 24 * 60 * 60 * 1000,
+  keys: [keys.session.cookieKey]
+}));
 
-    async (accessToken, refreshToken, profile, cb) => {
-      const { id, displayName } = profile;
-
-      const fbUsers = await models.FbAuth.findAll({
-        limit: 1,
-        where: { fb_id: id }
-      });
-
-      console.log(fbUsers);
-      console.log(profile);
-
-      if (!fbUsers.length) {
-        const user = await models.FbAuth.create();
-        await models.FbAuth.create({
-          fb_id: id,
-          display_name: displayName,
-          user_id: user.id
-        });
-      }
-
-      cb(null, {});
-    }
-  )
-);
-
+// initialize passport
 server.use(passport.initialize());
+server.use(passport.session());
 
-server.get("/auth/facebook", passport.authenticate("facebook"));
+// // set view engine
+// server.set('view engine', 'ejs');
 
-server.get(
-  "/auth/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: "/login" }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect("/");
-    res.send("Auth good boy");
-  }
-);
+// set up routes
+server.use('/auth', authRoutes);
+
+// create home route
+server.get('/', (req, res) => {
+  res.send('home');
+});
+
+
 
 // Binding express with graphql
 

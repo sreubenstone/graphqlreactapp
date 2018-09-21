@@ -1,27 +1,37 @@
-// Update with your config settings.
-var options = {
+module.exports = {
   development: {
     client: "pg",
-    connection: "postgres://localhost:5432/graphqlhack",
+    connection: "postgres://localhost/graphqlhack",
     migrations: {
-      directory: __dirname + "/db/migrations"
+      directory: "./db/migrations"
     },
     seeds: {
-      directory: __dirname + "/db/seeds"
-    }
+      directory: "./db/seeds/dev"
+    },
+    useNullAsDefault: true
   },
+
+  test: {
+    client: "pg",
+    connection: "postgres://localhost/test",
+    migrations: {
+      directory: "./db/migrations"
+    },
+    seeds: {
+      directory: "./db/seeds/test"
+    },
+    useNullAsDefault: true
+  },
+
   production: {
     client: "pg",
     connection: process.env.DATABASE_URL,
     migrations: {
-      directory: __dirname + "/db/migrations"
+      directory: "./db/migrations"
     },
     seeds: {
-      directory: __dirname + "/db/seeds/production"
-    }
+      directory: "./db/seeds/production"
+    },
+    useNullAsDefault: true
   }
 };
-
-var environment = process.env.NODE_ENV || "development";
-var config = options[environment];
-module.exports = require("knex")(config);
