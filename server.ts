@@ -1,6 +1,7 @@
 import express = require("express");
 import cors = require("cors");
 require("dotenv").config();
+import * as bodyParser from "body-parser";
 import graphqlHTTP = require("express-graphql");
 import schema from "./schema/schema";
 import passport from "passport";
@@ -46,11 +47,17 @@ server.get('/', (req, res) => {
 
 server.use(
   "/graphql",
-  graphqlHTTP({
+  bodyParser.json(),
+  (req, _, next) => {
+    return next();
+  },
+  graphqlHTTP(req => ({
     schema,
+    context: { req },
     graphiql: true
-  })
+  }))
 );
+
 
 server.listen(process.env.PORT, () => {
   console.log("express is listening for requests on port 4000");

@@ -3,6 +3,10 @@ var pg = require("pg");
 const { Client } = require("pg");
 require("dotenv").config();
 import models = require(".././models/index.js");
+const knexConfig = require("../db/knex");
+const knex = require("knex")(knexConfig);
+const keys = require('../config/keys');
+
 
 interface Message {
   type: object;
@@ -26,13 +30,16 @@ const {
 //   { message: "i like those red shoes", id: "3" }
 // ];
 
-const FbuserType = new GraphQLObjectType({
-  name: "Fbuser",
+const GoogleUserType = new GraphQLObjectType({
+  name: "GoogleUser",
   fields: () => ({
-    fb_id: { type: GraphQLString },
-    fb_name: { type: GraphQLString }
+    id: { type: GraphQLString },
+    email: { type: GraphQLString },
+    name: { type: GraphQLString },
+    short_description: { type: GraphQLString }
   })
 });
+
 
 const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -54,6 +61,17 @@ const RootQuery = new GraphQLObjectType({
         const nodes = dong.map(node => node.dataValues);
         console.log("map of dong", nodes);
         return nodes;
+      }
+    },
+    profile: {
+      type: GoogleUserType,
+      async resolve(parents, args, ctx) {
+        console.log(ctx.req.user)
+        const lebron = ctx.req.user[0];
+        const shit = await knex.select().table('google_users').where({ id: lebron.id });
+        console.log('shit', shit)
+        let cow = shit[0]
+        return cow
       }
     }
   }
