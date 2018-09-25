@@ -66,12 +66,15 @@ const RootQuery = new GraphQLObjectType({
     profile: {
       type: GoogleUserType,
       async resolve(parents, args, ctx) {
-        console.log(ctx.req.user)
-        const lebron = ctx.req.user[0];
-        const shit = await knex.select().table('google_users').where({ id: lebron.id });
-        console.log('shit', shit)
-        let cow = shit[0]
-        return cow
+        console.log('context is reading out as:', ctx)
+        if (ctx.req.user[0]) {
+          console.log('UserObject resolves to:', ctx.req.user[0])
+          return ctx.req.user[0]
+        }
+        else {
+          console.log("crap")
+          return null
+        }
       }
     }
   }
