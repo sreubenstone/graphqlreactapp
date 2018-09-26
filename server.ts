@@ -8,13 +8,17 @@ import passport from "passport";
 import FacebookStrategy from "passport-facebook";
 import { appendFile } from "fs";
 import models = require("./models/index.js");
-import * as session from "express-session";
+const session = require("express-session");
 const knexConfig = require("./db/knex");
 const knex = require("knex")(knexConfig);
 const authRoutes = require('./routes/auth-routes');
 const passportSetup = require('./config/passport-setup');
 const cookieSession = require('cookie-session');
 const keys = require('./config/keys');
+const RedisStore = require('connect-redis')(session);
+const redis = require("redis"),
+
+  client = redis.createClient();
 
 
 const server = express();
@@ -28,10 +32,21 @@ var corsOptions = {
 server.use(cors(corsOptions));
 
 // set up session cookies
-server.use(cookieSession({
-  maxAge: 24 * 60 * 60 * 1000,
-  keys: [keys.session.cookieKey]
-}));
+// server.use(cookieSession({
+//   maxAge: 24 * 60 * 60 * 1000,
+//   keys: [keys.session.cookieKey]
+// }));
+
+
+server.use(session({
+  secret: [keys.session.cookieKey],
+  resave: false,
+  store: new RedisStore({ host: 'localhost', port: 6379, client: client }),
+  saveUninitialized: false,
+  // cookie: { secure: true }
+}))
+
+
 
 // initialize passport
 server.use(passport.initialize());
