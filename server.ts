@@ -18,7 +18,14 @@ const keys = require('./config/keys');
 
 
 const server = express();
-server.use(cors());
+
+// enable cors (Apollo Legitamate)
+var corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true // <-- REQUIRED backend setting
+};
+
+server.use(cors(corsOptions));
 
 // set up session cookies
 server.use(cookieSession({

@@ -67,7 +67,7 @@ const RootQuery = new GraphQLObjectType({
       type: GoogleUserType,
       async resolve(parents, args, ctx) {
         console.log('context is reading out as:', ctx)
-        if (ctx.req.user[0]) {
+        if (ctx.req.user) {
           console.log('UserObject resolves to:', ctx.req.user[0])
           return ctx.req.user[0]
         }
